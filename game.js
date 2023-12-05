@@ -25,12 +25,13 @@ var background;
 var infoText;
 var keys;
 var explosion;
+var music;
 var BIG_THRUST = 1000;
 var LITTLE_THRUST = 5.0;
 function preload ()
 {
     this.load.image('ship','ships/1.png');
-    this.load.image('back','Space-Background-4.jpg');
+    this.load.image('back','Backgrounds/Blue Nebula/Blue Nebula 1 - 1024x1024.png');
 
     var u;
     for(var i = 0; i <15; i++)
@@ -39,12 +40,15 @@ function preload ()
         
     this.load.image('boom' + i, 'effects/explosion4/k2_' + u + '.png');
     }
+
+    this.load.audio('menu','Menu.wav');
 }
 
 function create ()
 {
-    background = this.add.image(0,0,'back');
-    background.setSize(100,100);
+    background = this.add.tileSprite(500,500,1024,1024,'back');
+   
+    
 
 
     var f = [];
@@ -85,6 +89,9 @@ function create ()
         {
             explosion.play('explode');
         });
+
+        music = this.sound.add('menu', {loop: true})
+        music.play();
 }
 
 
@@ -146,6 +153,6 @@ function update ()
 
 
     // Cheesy scrolling background
-    background.y += 0.2;
+    background.tilePositionY -= 2;
 
 }
