@@ -17,12 +17,10 @@ constructor(engine,spriteName,x,y,enemy)
 
     this.tX = 0.0;
     this.tY = 0.0;
+
+    this.spaceInvaderRight = true;
 }
-refresh()
-{
-    this.tX = 0;
-    this.tY = 0;
-}
+
 left()
 {
     this.tX = -Ship.BIG_THRUST;
@@ -81,14 +79,23 @@ update()
 
     // Activate big thruster!
     this.sprite.setAcceleration(this.tX,this.tY);
+
+    this.tX = 0;
+    this.tY = 0;
 }
 doAI() 
 {
 
-    this.refresh();
+    if(this.sprite.x > 750) {this.spaceInvaderRight = false; }
+    if(this.sprite.x < 150) {this.spaceInvaderRight = true; }
 
- if(this.sprite.x > 300) {this.left();}
- if(this.sprite.x < 100) {this.right();}
+    if(this.spaceInvaderRight) {this.right();} else {this.left();}
+
+
+    this.sprite.angle = Phaser.Math.RadToDeg(
+        Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, Ship.playerShip.sprite.x, Ship.playerShip.sprite.y)
+       ) + 90; // The +90 is to ensure it points forward rather than to the right.
+
 }
 
 }

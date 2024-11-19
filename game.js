@@ -71,7 +71,7 @@ function create ()
     player = new Ship(this,'player',200,200, false);
     Ship.playerShip = player;
 
-    for(let i = 0;i <3;i++)
+    for(let i = 0;i <1;i++)
     {
        enemy[i] = new Ship(this,'enemy',i * 300, 400,true);
         
@@ -113,7 +113,7 @@ function create ()
 function update ()
 {
 
-    player.refresh();
+    
    
     // Basic controls, BIG thrust is the engine that player directly controls, LITTLE thrust is for indirectly controlled to prevent drift.
   
@@ -153,7 +153,7 @@ function update ()
     
     player.update();
 
-    for(let i = 0;i <3;i++)
+    for(let i = 0;i < enemy.length;i++)
     {
         enemy[i].update();
     }
