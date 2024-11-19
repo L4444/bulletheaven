@@ -56,7 +56,7 @@ function preload ()
     // load music
     this.load.audio('menu','music/Menu.wav');
     this.load.audio('battle','music/Sutar Rising.mp3');
-    this.load.audio('sneak', 'music/Brought to Life.mp3');
+    this.load.audio('sneak', 'music/Brought to life.mp3');
     this.load.audio('boss','music/Power Trip 3.mp3');
 
     // load SFX
