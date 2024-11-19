@@ -79,8 +79,8 @@ function create ()
     battleMusic = this.sound.add('battle', {loop: true});
     battleMusic.volume = 0.1;
 
-    //sneakMusic = this.sound.add('sneak', {loop: true});
-    //sneakMusic.volume = 0.1;
+    sneakMusic = this.sound.add('sneak', {loop: true});
+    sneakMusic.volume = 0.1;
 
     bossMusic = this.sound.add('boss', {loop: true});
     bossMusic.volume = 0.1;
