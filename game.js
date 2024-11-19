@@ -26,9 +26,12 @@ var background;
 var keys;
 var explosion;
 
-var battleMusic;
 var menuMusic;
+var battleMusic;
+var sneakMusic;
+var bossMusic;
 
+var shootSound;
 
 var enemy = [];
 
@@ -50,9 +53,16 @@ function preload ()
     this.load.image('boom' + i, 'effects/explosion4/k2_' + u + '.png');
     }
 
-    this.load.audio('menu','Menu.wav');
-    this.load.audio('battle','Sutar Rising.mp3');
-    this.load.audio('sneak', 'Brought to Life.mp3');
+    // load music
+    this.load.audio('menu','music/Menu.wav');
+    this.load.audio('battle','music/Sutar Rising.mp3');
+    this.load.audio('sneak', 'music/Brought to Life.mp3');
+    this.load.audio('boss','music/Power Trip 3.mp3');
+
+    // load SFX
+    this.load.audio('shoot1','sounds/alienshoot1.wav');
+    this.load.audio('shoot2','sounds/alienshoot2.wav');
+
 }
 
 function create ()
@@ -61,6 +71,19 @@ function create ()
    
     
 
+
+ 
+    // Create music objects
+    menuMusic = this.sound.add('menu', {loop: true});
+
+    battleMusic = this.sound.add('battle', {loop: true});
+    battleMusic.volume = 0.1;
+
+    sneakMusic = this.sound.add('sneak', {loop: true});
+    sneakMusic.volume = 0.1;
+
+    bossMusic = this.sound.add('boss', {loop: true});
+    bossMusic.volume = 0.1;
 
     var f = [];
     for( var i = 0; i < 15; i++)
@@ -83,22 +106,22 @@ function create ()
     }
    
 
-    keys = this.input.keyboard.addKeys('W,S,A,D,F,E,Q,UP,DOWN,SPACE,F1,1,2,3,4');
+    keys = this.input.keyboard.addKeys('W,S,A,D,F,E,Q,UP,DOWN,SPACE,F1');
     infoText = this.add.text(10,30,"");
     helpText = this.add.text(10,10,"Press F1 to toggle help");
 
 
-    
+   
 
-    // Toggle the help for controls and debug
+    // Toggle the help for controls and debug. Also control music
     this.input.keyboard.on('keyup-F1',function(event) {infoText.visible = !infoText.visible;})
+    this.input.keyboard.on('keyup-ONE',function(event) { if(!menuMusic.isPlaying) { this.game.sound.stopAll(); menuMusic.play();}})
+    this.input.keyboard.on('keyup-TWO',function(event) { if(!battleMusic.isPlaying) { this.game.sound.stopAll(); battleMusic.play();}})
+    this.input.keyboard.on('keyup-THREE',function(event) { if(!sneakMusic.isPlaying) { this.game.sound.stopAll(); sneakMusic.play();}})
+    this.input.keyboard.on('keyup-FOUR',function(event) { if(!bossMusic.isPlaying) { this.game.sound.stopAll(); bossMusic.play();}})
 
    
-    battleMusic = this.sound.add('battle', {loop: true})
-    battleMusic.volume = 0.1;
     
-
-    menuMusic = this.sound.add('menu', {loop: true})
     
 
   
@@ -118,17 +141,10 @@ function update ()
     if(keys.W.isDown) {player.forward();}
     if(keys.S.isDown) {player.back();}
     
-    if(game.input.mousePointer.buttons == 1) {player.shoot();}
+    if(game.input.mousePointer.buttons == 1) { player.shoot();}
 
-    // Music controls
-    if(keys.F.isDown && !menuMusic.isPlaying) {menuMusic.play(); battleMusic.stop();}
-
-    if(keys.SPACE.isDown && !battleMusic.isPlaying)
-        {
-        menuMusic.stop();
-        battleMusic.play();
-        explosion.play('explode');
-        }
+    // boom controls
+    if(keys.SPACE.isDown) {explosion.play('explode');}
 
         // Game design controls.
         if(keys.UP.isDown) {Ship.BIG_THRUST += 100;}
@@ -156,7 +172,7 @@ function update ()
      "\nCursorX: " + game.input.mousePointer.x + "\nCursorY: " + game.input.mousePointer.y + 
     "\ntargetAngle: " + targetAngle + "\nPlayer Angle: " + player.sprite.angle + 
     "\nMousebuttons: " + game.input.mousePointer.buttons + "\n------------Controls---------- \nW,S,A,D for movement" 
-    + "\nleft click for shoot \nF for menu music \nSpacebar for battle music \nUP, DOWN, E and Q to play with physics");
+    + "\nleft click for shoot \n1 for menu music \n2 for battle music \n3 for stealth music \n4 for boss music \nUP, DOWN, E and Q to play with physics");
     
 
     

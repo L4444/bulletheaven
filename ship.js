@@ -1,8 +1,10 @@
 class Ship
 {
-    static BIG_THRUST = 1000;
+    static BIG_THRUST = 2600;
     static LITTLE_THRUST = 5.0; 
+    static MAX_SPEED = 400;
     static playerShip;
+
 constructor(engine,spriteName,x,y,enemy)
 {
 
@@ -12,6 +14,7 @@ constructor(engine,spriteName,x,y,enemy)
     for(let i = 0; i< 10;i++)
     {
     this.bullet[i] = engine.physics.add.sprite(x,y, "pew");
+    if(enemy) {this.bullet[i].tint = 0xFF6666;}
     this.bullet[i].setScale(0.25);
     this.bullet[i].visible = false;
     }
@@ -37,17 +40,32 @@ constructor(engine,spriteName,x,y,enemy)
     this.tY = 0.0;
 
    
+   if(enemy) { this.shootSound = engine.sound.add('shoot2', {loop: false});}
+   else
+   {
+    this.shootSound = engine.sound.add('shoot1', {loop: false});
+   }
+
+   
+   this.shootSound.volume = 0.3;
 }
 shoot()
 {
-    if(this.clock > this.lastTick + 20)
+
+    
+    if(this.clock > this.lastTick + 40)
     {
+        this.shootSound.play();
+
         this.bullet[this.nextBullet].visible = true;
         this.bullet[this.nextBullet].x = this.sprite.x;
         this.bullet[this.nextBullet].y = this.sprite.y;
 
+        let speed = -500;
+       // if(this.enemy) {speed = -200;} // Gimp the enemies, to make them easier to dodge
 
-        let v = new Phaser.Math.Vector2(0,-1000);
+
+        let v = new Phaser.Math.Vector2(0,speed);
         v.rotate(Phaser.Math.DegToRad(this.sprite.angle));
 
         this.bullet[this.nextBullet].setVelocity(v.x,v.y);
@@ -113,9 +131,10 @@ update()
      
 
 /// Speed cap
-   if(this.sprite.body.velocity.x > 400) {this.sprite.setVelocityX(400);this.tX = 0;}
-   if(this.sprite.body.velocity.x < -400) {this.sprite.setVelocityX(-400);this.tX = 0;}
-
+   if(this.sprite.body.velocity.x > Ship.MAX_SPEED) {this.sprite.setVelocityX(Ship.MAX_SPEED);this.tX = 0;}
+   if(this.sprite.body.velocity.x < -Ship.MAX_SPEED) {this.sprite.setVelocityX(-Ship.MAX_SPEED);this.tX = 0;}
+   if(this.sprite.body.velocity.y > Ship.MAX_SPEED00) {this.sprite.setVelocityY(Ship.MAX_SPEED);this.tY = 0;}
+   if(this.sprite.body.velocity.y < -Ship.MAX_SPEED) {this.sprite.setVelocityY(-Ship.MAX_SPEED);this.tY = 0;}
     // Activate big thruster!
     this.sprite.setAcceleration(this.tX,this.tY);
 
@@ -132,6 +151,7 @@ doAI()
 
     if(this.sprite.x > 750) {this.spaceInvaderRight = false; }
     if(this.sprite.x < 150) {this.spaceInvaderRight = true; }
+    if(Math.floor(Math.random() * 40) == 1)  {this.shoot();}
 
     if(this.spaceInvaderRight) {this.right();} else {this.left();}
 
