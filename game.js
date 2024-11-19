@@ -9,7 +9,7 @@ var config = {
                 y: 0,
                 width: 900,
                 height: 900,
-                debug: true
+                //debug: true // Show the wireframes and velocity 
             }
         },
     scene: {
@@ -68,7 +68,7 @@ function create ()
     explosion.setScale(0.25);
 
    
-    player = new Ship(this,'player',200,200, false);
+    player = new Ship(this,'player',400,600, false);
     Ship.playerShip = player;
 
     for(let i = 0;i <1;i++)
@@ -123,8 +123,9 @@ function update ()
     if(keys.W.isDown) {player.forward();}
     if(keys.S.isDown) {player.back();}
     
+    
 
-  
+    if(game.input.mousePointer.buttons == 1) {player.shoot();}
 
    
 
@@ -148,7 +149,8 @@ function update ()
     + "\nVelX = " + player.sprite.body.velocity.x + "\nVelY = " + player.sprite.body.velocity.y + 
      "\ntX: " + player.tX + "\ntY: " + player.tY +
      "\nCursorX: " + game.input.mousePointer.x + "\nCursorY: " + game.input.mousePointer.y + 
-    "\ntargetAngle: " + targetAngle + "\nPlayer Angle: " + player.sprite.angle);
+    "\ntargetAngle: " + targetAngle + "\nPlayer Angle: " + player.sprite.angle + 
+    "\nMousebuttons: " + game.input.mousePointer.buttons);
     
     
     player.update();

@@ -5,22 +5,61 @@ class Ship
     static playerShip;
 constructor(engine,spriteName,x,y,enemy)
 {
+
+    // The bullet sprites (Note that I intialise this before the ship 
+    // so that the bullets spawn obscured by the ship sprite)
+    this.bullet = [];
+    for(let i = 0; i< 10;i++)
+    {
+    this.bullet[i] = engine.physics.add.sprite(x,y, "pew");
+    this.bullet[i].setScale(0.25);
+    this.bullet[i].visible = false;
+    }
+    this.nextBullet = 0;
+
+    this.clock = 0;
+    this.lastTick = -500;
+
+
+    // The actual ship's sprite 
     this.sprite = engine.physics.add.sprite(x,y, spriteName);
     this.sprite.body.setCollideWorldBounds(true);
     this.sprite.setScale(0.5);
 
     this.enemy = enemy;
     if(enemy) {
-        this.sprite.angle = 180;
-        
+
+        // Go right, then go left. Like space invaders :)
+        this.spaceInvaderRight = true;
     }
 
     this.tX = 0.0;
     this.tY = 0.0;
 
-    this.spaceInvaderRight = true;
+   
 }
+shoot()
+{
+    if(this.clock > this.lastTick + 20)
+    {
+        this.bullet[this.nextBullet].visible = true;
+        this.bullet[this.nextBullet].x = this.sprite.x;
+        this.bullet[this.nextBullet].y = this.sprite.y;
 
+
+        let v = new Phaser.Math.Vector2(0,-1000);
+        v.rotate(Phaser.Math.DegToRad(this.sprite.angle));
+
+        this.bullet[this.nextBullet].setVelocity(v.x,v.y);
+        this.bullet[this.nextBullet].angle = this.sprite.angle;
+
+        if(this.nextBullet < this.bullet.length - 1) {this.nextBullet++;} else {this.nextBullet = 0;}
+
+        this.lastTick = this.clock;
+
+    }
+
+}
 left()
 {
     this.tX = -Ship.BIG_THRUST;
@@ -80,8 +119,13 @@ update()
     // Activate big thruster!
     this.sprite.setAcceleration(this.tX,this.tY);
 
+    // Tick the clock (useful for limiting bullet firing)
+    this.clock++;
+
+
     this.tX = 0;
     this.tY = 0;
+
 }
 doAI() 
 {
