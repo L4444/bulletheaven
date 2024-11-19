@@ -26,17 +26,18 @@ var infoText;
 var keys;
 var explosion;
 var music;
-var BIG_THRUST = 1000;
-var LITTLE_THRUST = 5.0;
+
 
 var enemy = [];
 
+var shiptest;
 
 function preload ()
 {
     this.load.image('player','ships/1B.png');
     this.load.image('enemy','ships/8.png');
     this.load.image('back','Backgrounds/Blue Nebula/Blue Nebula 1 - 1024x1024.png');
+    this.load.image('pew','pew.png');
 
     var u;
     for(var i = 0; i <15; i++)
@@ -66,16 +67,14 @@ function create ()
     explosion = this.add.sprite(400,400, 'boom14');
     explosion.setScale(0.25);
 
-    player = this.physics.add.sprite(40,400, 'player');
-    player.body.setCollideWorldBounds(true);
-    player.setScale(0.5);
+   
+    player = new Ship(this,'player',200,200, false);
+    Ship.playerShip = player;
 
     for(let i = 0;i <3;i++)
     {
-        enemy[i] = this.physics.add.sprite(400 * i,400, 'enemy');
-        enemy[i].body.setCollideWorldBounds(true);
-        enemy[i].setScale(0.5);
-        enemy[i].angle = 180;
+       enemy[i] = new Ship(this,'enemy',i * 300, 400,true);
+        
     }
    
 
@@ -99,85 +98,65 @@ function create ()
     });
 
     this.input.keyboard.on('keydown-SPACE', function(event)
-        {
+    {
             explosion.play('explode');
-        });
+    });
 
-        music = this.sound.add('menu', {loop: true})
-        music.play();
+    music = this.sound.add('menu', {loop: true})
+   // music.play();
+
+    
 }
 
 
 
 function update ()
 {
-    var tX = 0;
-    var tY = 0;
-    
+
+    player.refresh();
    
     // Basic controls, BIG thrust is the engine that player directly controls, LITTLE thrust is for indirectly controlled to prevent drift.
-    if(keys.D.isDown) {tX = BIG_THRUST;}
-    if(keys.A.isDown) {tX = -BIG_THRUST;}
-    if(keys.W.isDown) {tY = -BIG_THRUST;}
-    if(keys.S.isDown) {tY = BIG_THRUST;}
+  
+    if(keys.D.isDown) {player.right();}
+    if(keys.A.isDown) {player.left();}
+
+    if(keys.W.isDown) {player.forward();}
+    if(keys.S.isDown) {player.back();}
     
 
   
-    // If we aren't using the big thruster, activate the little thruster to slow us down and prevent drift.... if our X velocity is really small, just 
-    // "apply the handbrake", setting velocity to zero
-    if(tX == 0)
-    {
-        if(Math.abs(player.body.velocity.x) > 1)
-        {
-            tX = player.body.velocity.x * -LITTLE_THRUST; 
-            
-        }
-        else
-        {
-            player.setVelocityX(0);
-            
-        }
-        
-    }
-    // Same as above, but for Y axis, not sure if I should make this into a function.
-    if(tY == 0)
-    {
-        if(Math.abs(player.body.velocity.y) > 1)
-        {
-            tY = player.body.velocity.y * -LITTLE_THRUST; 
-        }
-        else
-        {
-            player.setVelocityY(0);
-        }
-    }
 
-/// Speed cap
-    if(player.body.velocity.x > 400) {player.setVelocityX(400);tX = 0;}
-    if(player.body.velocity.x < -400) {player.setVelocityX(-400);tX = 0;}
+   
 
-
-    // Activate big thruster!
-    player.setAcceleration(tX,tY);
+   
 
 
 
     // Angle the ship to "look at" the cursor, Cursor aiming
     let targetAngle = Phaser.Math.RadToDeg(
-        Phaser.Math.Angle.Between(player.x, player.y, game.input.mousePointer.x,game.input.mousePointer.y)
-        ) + 90; // The +90 is to ensure it points forward rather than to the right.
+        Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, game.input.mousePointer.x,game.input.mousePointer.y)
+       ) + 90; // The +90 is to ensure it points forward rather than to the right.
     
 
     
 
     // TEST: Just set it
-    player.angle = targetAngle;
+    player.sprite.angle = targetAngle;
 
     // Present debug info
-    infoText.setText("Big thrust is " + BIG_THRUST + "\nand Little thrust is " + LITTLE_THRUST + "\nVelX = " + player.body.velocity.x + "\nVelY = " + player.body.velocity.y
-    + "\nCursorX: " + game.input.mousePointer.x + "\nCursorY: " + game.input.mousePointer.y + "\ntargetAngle: " + targetAngle + "\nPlayer Angle: " + player.angle);
-
+    infoText.setText("Big thrust is " + Ship.BIG_THRUST + "\nand Little thrust is " + Ship.LITTLE_THRUST 
+    + "\nVelX = " + player.sprite.body.velocity.x + "\nVelY = " + player.sprite.body.velocity.y + 
+     "\ntX: " + player.tX + "\ntY: " + player.tY +
+     "\nCursorX: " + game.input.mousePointer.x + "\nCursorY: " + game.input.mousePointer.y + 
+    "\ntargetAngle: " + targetAngle + "\nPlayer Angle: " + player.sprite.angle);
     
+    
+    player.update();
+
+    for(let i = 0;i <3;i++)
+    {
+        enemy[i].update();
+    }
 
 
     // Cheesy scrolling background
