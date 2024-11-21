@@ -4,19 +4,33 @@ class Ship
     static LITTLE_THRUST = 5.0; 
     static MAX_SPEED = 400;
     static playerShip;
+    static enemyShips;
 
-constructor(engine,spriteName,x,y,enemy)
+constructor(engine,spriteName,x,y,isEnemy)
 {
 
     // The bullet sprites (Note that I intialise this before the ship 
     // so that the bullets spawn obscured by the ship sprite)
     this.bullet = [];
-    for(let i = 0; i< 10;i++)
+    for(let i = 0; i< 50;i++)
     {
-    this.bullet[i] = engine.physics.add.sprite(x,y, "pew");
-    if(enemy) {this.bullet[i].tint = 0xFF6666;}
+    this.bullet[i] = engine.physics.add.sprite(x,y, "pew").setCircle(256/2,0,256/2 - 256/2);
+    if(isEnemy) {this.bullet[i].tint = 0xFF6666;}
     this.bullet[i].setScale(0.25);
-    this.bullet[i].visible = false;
+    this.bullet[i].x = -400;
+    this.bullet[i].y = -400;
+
+    
+        if(isEnemy)
+        {
+           engine.physics.add.overlap(Ship.playerShip.sprite, this.bullet[i], function(hitShip, hitBullet, body1, body2) { 
+            console.log('hit'); hitBullet.x = -400; hitBullet.y = -400; 
+            hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
+            hitBullet.setVelocity(0,0);
+            
+        
+        }); 
+        }
     }
     this.nextBullet = 0;
 
@@ -25,12 +39,19 @@ constructor(engine,spriteName,x,y,enemy)
 
 
     // The actual ship's sprite 
-    this.sprite = engine.physics.add.sprite(x,y, spriteName);
-    this.sprite.body.setCollideWorldBounds(true);
-    this.sprite.setScale(0.5);
+    let w = (isEnemy) ? 182 : 124;
+    let h = (isEnemy) ? 232 : 135;
 
-    this.enemy = enemy;
-    if(enemy) {
+    this.sprite = engine.physics.add.sprite(x,y, spriteName).setCircle(w /2,0,h/2 - w/2);
+    this.sprite.body.setCollideWorldBounds(true);
+    this.sprite.body.setBounce(1,1);
+    
+    this.sprite.setScale(0.5);
+    
+    this.sprite.body.onCollide= true;
+
+    this.isEnemy = isEnemy;
+    if(isEnemy) {
 
         // Go right, then go left. Like space invaders :)
         this.spaceInvaderRight = true;
@@ -40,7 +61,7 @@ constructor(engine,spriteName,x,y,enemy)
     this.tY = 0.0;
 
    
-   if(enemy) { this.shootSound = engine.sound.add('shoot2', {loop: false});}
+   if(isEnemy) { this.shootSound = engine.sound.add('shoot2', {loop: false});}
    else
    {
     this.shootSound = engine.sound.add('shoot1', {loop: false});
@@ -48,6 +69,14 @@ constructor(engine,spriteName,x,y,enemy)
 
    
    this.shootSound.volume = 0.3;
+
+
+   // Let the enemies deal with collisions between them and player ships.
+   if(isEnemy)
+   {
+   engine.physics.add.collider(Ship.playerShip.sprite, this.sprite, function(hitShip, hitBullet, body1, body2) { /* TODO: Add collision code */}); 
+   }
+  
 }
 shoot()
 {
@@ -57,7 +86,7 @@ shoot()
     {
         this.shootSound.play();
 
-        this.bullet[this.nextBullet].visible = true;
+        
         this.bullet[this.nextBullet].x = this.sprite.x;
         this.bullet[this.nextBullet].y = this.sprite.y;
 
@@ -97,13 +126,13 @@ back()
 update()
 {
 
-    if(this.enemy) {this.doAI();}
+    if(this.isEnemy) {this.doAI();}
     
     // If we aren't using the big thruster, activate the little thruster to slow us down and prevent drift.... if our X velocity is really small, just 
     // "apply the handbrake", setting velocity to zero
     if(this.tX == 0)
     {
-        if(Math.abs(this.sprite.body.velocity.x) > 10)
+        if(Math.abs(this.sprite.body.velocity.x) > 1)
         {
             this.tX = this.sprite.body.velocity.x * -Ship.LITTLE_THRUST; 
             
@@ -133,7 +162,7 @@ update()
 /// Speed cap
    if(this.sprite.body.velocity.x > Ship.MAX_SPEED) {this.sprite.setVelocityX(Ship.MAX_SPEED);this.tX = 0;}
    if(this.sprite.body.velocity.x < -Ship.MAX_SPEED) {this.sprite.setVelocityX(-Ship.MAX_SPEED);this.tX = 0;}
-   if(this.sprite.body.velocity.y > Ship.MAX_SPEED00) {this.sprite.setVelocityY(Ship.MAX_SPEED);this.tY = 0;}
+   if(this.sprite.body.velocity.y > Ship.MAX_SPEED) {this.sprite.setVelocityY(Ship.MAX_SPEED);this.tY = 0;}
    if(this.sprite.body.velocity.y < -Ship.MAX_SPEED) {this.sprite.setVelocityY(-Ship.MAX_SPEED);this.tY = 0;}
     // Activate big thruster!
     this.sprite.setAcceleration(this.tX,this.tY);
@@ -152,6 +181,7 @@ doAI()
     if(this.sprite.x > 750) {this.spaceInvaderRight = false; }
     if(this.sprite.x < 150) {this.spaceInvaderRight = true; }
     if(Math.floor(Math.random() * 40) == 1)  {this.shoot();}
+    
 
     if(this.spaceInvaderRight) {this.right();} else {this.left();}
 
@@ -159,6 +189,8 @@ doAI()
     this.sprite.angle = Phaser.Math.RadToDeg(
         Phaser.Math.Angle.Between(this.sprite.x, this.sprite.y, Ship.playerShip.sprite.x, Ship.playerShip.sprite.y)
        ) + 90; // The +90 is to ensure it points forward rather than to the right.
+
+    
 
 }
 

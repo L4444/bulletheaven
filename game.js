@@ -21,6 +21,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 var player;
+var enemy = [];
 var background;
 
 var keys;
@@ -33,11 +34,12 @@ var bossMusic;
 
 var shootSound;
 
-var enemy = [];
+
 
 var infoText;
 var helpText;
 var pauseText;
+var pauseShade;
 
 const state = {
  Menu: 'Menu',
@@ -66,7 +68,7 @@ function preload ()
 
     // load music
     this.load.audio('menu','music/Menu.wav');
-    this.load.audio('battle','music/Sutar Rising.mp3');
+    this.load.audio('battle','music/n-Dimensions (Main Theme).mp3');
     this.load.audio('sneak', 'music/Brought to life.mp3');
     this.load.audio('boss','music/Power Trip 3.mp3');
 
@@ -78,12 +80,12 @@ function preload ()
 
 function resumeGame()
 {
-    gameState = state.Gameplay; this.game.scene.scenes[0].physics.resume();this.game.sound.pauseAll(); battleMusic.resume(); menuBack.visible = false; pauseText.visible = false;
+    gameState = state.Gameplay; this.game.scene.scenes[0].physics.resume();this.game.sound.pauseAll(); battleMusic.resume(); menuBack.visible = false; pauseText.visible = false; pauseShade.visible = false;
 }
 
 function pauseGame()
 {
-    gameState = state.Menu;this.game.scene.scenes[0].physics.pause(); this.game.sound.pauseAll(); menuMusic.resume(); pauseText.visible = true;
+    gameState = state.Menu;this.game.scene.scenes[0].physics.pause(); this.game.sound.pauseAll();  pauseText.visible = true; pauseShade.visible = true;
 }
 
 function create ()
@@ -118,7 +120,8 @@ function create ()
     explosion.setScale(0.25);
 
    
-    player = new Ship(this,'player',400,850, false);
+    player = new Ship(this,'player',460,840, false);
+    
     Ship.playerShip = player;
 
     for(let i = 0;i <4;i++)
@@ -126,14 +129,18 @@ function create ()
        enemy[i] = new Ship(this,'enemy',300, i*130+80,true);
         
     }
+    Ship.enemyShips = enemy;
 
     // The pause menu
     menuBack = this.add.tileSprite(500,500,1024,1024,'menuBack');
+    pauseShade = this.add.rectangle(0, 0, 2000, 2000, 0x336633, .25);
+    pauseShade.visible = false;
 
     keys = this.input.keyboard.addKeys('W,S,A,D,F,E,Q,UP,DOWN,SPACE,F1');
     infoText = this.add.text(10,30,"");
     helpText = this.add.text(10,10,"Press F1 to toggle help");
     pauseText = this.add.text(400,400, "Paused - Press escape to unpause");
+    
 
 
    
@@ -166,11 +173,19 @@ function create ()
     gameState = state.Menu;
     
     menuMusic.play();
+    menuMusic.pause();
 
     battleMusic.play();
     battleMusic.pause();
 
-  
+    
+    
+
+    
+
+    
+
+   
 }
 
 
@@ -179,6 +194,9 @@ function update ()
 {
    // Cheesy scrolling background
    menuBack.tilePositionY -= 1;
+
+
+ 
 
     if(gameState == state.Gameplay)
     {
@@ -234,7 +252,7 @@ function update ()
 
 
         // Cheesy scrolling background
-        background.tilePositionY -= 2;
+        //background.tilePositionY -= 2;
     }
 
 }
