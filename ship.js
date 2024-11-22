@@ -4,7 +4,7 @@ class Ship
     static LITTLE_THRUST = 5.0; 
     static MAX_SPEED = 400;
     static playerShip;
-    static enemyShips;
+
 
 constructor(engine,spriteName,x,y,isEnemy)
 {
@@ -12,7 +12,7 @@ constructor(engine,spriteName,x,y,isEnemy)
     // The bullet sprites (Note that I intialise this before the ship 
     // so that the bullets spawn obscured by the ship sprite)
     this.bullet = [];
-    for(let i = 0; i< 50;i++)
+    for(let i = 0; i< 10;i++)
     {
     this.bullet[i] = engine.physics.add.sprite(x,y, "pew").setCircle(256/2,0,256/2 - 256/2);
     if(isEnemy) {this.bullet[i].tint = 0xFF6666;}
@@ -23,13 +23,7 @@ constructor(engine,spriteName,x,y,isEnemy)
     
         if(isEnemy)
         {
-           engine.physics.add.overlap(Ship.playerShip.sprite, this.bullet[i], function(hitShip, hitBullet, body1, body2) { 
-            console.log('hit'); hitBullet.x = -400; hitBullet.y = -400; 
-            hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
-            hitBullet.setVelocity(0,0);
-            
-        
-        }); 
+         
         }
     }
     this.nextBullet = 0;
@@ -44,7 +38,7 @@ constructor(engine,spriteName,x,y,isEnemy)
 
     this.sprite = engine.physics.add.sprite(x,y, spriteName).setCircle(w /2,0,h/2 - w/2);
     this.sprite.body.setCollideWorldBounds(true);
-    this.sprite.body.setBounce(1,1);
+    this.sprite.body.setBounce(2,2);
     
     this.sprite.setScale(0.5);
     
@@ -71,11 +65,7 @@ constructor(engine,spriteName,x,y,isEnemy)
    this.shootSound.volume = 0.3;
 
 
-   // Let the enemies deal with collisions between them and player ships.
-   if(isEnemy)
-   {
-   engine.physics.add.collider(Ship.playerShip.sprite, this.sprite, function(hitShip, hitBullet, body1, body2) { /* TODO: Add collision code */}); 
-   }
+   
   
 }
 shoot()

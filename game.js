@@ -126,10 +126,52 @@ function create ()
 
     for(let i = 0;i <4;i++)
     {
-       enemy[i] = new Ship(this,'enemy',300, i*130+80,true);
+
+        enemy[i] = new Ship(this,'enemy',300, i*130+80,true);
+
+        
+
+       // Collide with the player
+       this.physics.add.collider(player.sprite, enemy[i].sprite, function(hitShip, hitBullet, body1, body2) { /* TODO: Add collision code */});
         
     }
-    Ship.enemyShips = enemy;
+
+    // Collide with other enemies
+    for(let i = 0;i < enemy.length;i++)
+    {
+        for(let j = i;j < enemy.length;j++)
+        {
+            this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(hitShip, hitBullet, body1, body2) { console.log('one bounce');});
+        }
+    }
+
+    // Add collision detection for Enemy bullets vs player
+    for(let i = 0;i < enemy.length;i++)
+    {
+
+        for(let j = 0;j < enemy[i].bullet.length;j++)
+        {
+        this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
+        console.log('Player hit'); hitBullet.x = -400; hitBullet.y = -400; 
+        hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
+        hitBullet.setVelocity(0,0);}); 
+        }
+
+    }
+
+    // Finally, add collision detection for Player bullets vs enemies
+    for(let i = 0;i < enemy.length;i++)
+    {
+
+        for(let j = 0;j < player.bullet.length;j++)
+        {
+            this.physics.add.overlap(enemy[i].sprite, player.bullet[j], function(hitShip, hitBullet, body1, body2) { 
+                console.log('Enemy hit'); hitBullet.x = -400; hitBullet.y = -400; 
+                hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
+                hitBullet.setVelocity(0,0);}); 
+        }
+    }
+
 
     // The pause menu
     menuBack = this.add.tileSprite(500,500,1024,1024,'menuBack');
