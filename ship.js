@@ -33,17 +33,22 @@ constructor(engine,spriteName,x,y,isEnemy)
 
 
     // The actual ship's sprite 
-    let w = (isEnemy) ? 182 : 124;
-    let h = (isEnemy) ? 232 : 135;
+   
 
-    this.sprite = engine.physics.add.sprite(x,y, spriteName).setCircle(w /2,0,h/2 - w/2);
+    this.sprite = engine.physics.add.sprite(x,y, spriteName);
+
+    // -- Get the measurements of the ship spread and create a hit circle 
+    let w = this.sprite.displayWidth;
+    let h = this.sprite.displayHeight;
+
+    this.sprite.setCircle(w /2,0,h/2 - w/2);
     
+    // -- Enemies don't collide with the sides, that way they can 'spawn' from the north
     if(!isEnemy) {this.sprite.body.setCollideWorldBounds(true);}
-    this.sprite.body.setBounce(2,2);
+    this.sprite.body.setBounce(3,3); // Ships should bounce a little off each other.
     
     this.sprite.setScale(0.5);
-    
-    this.sprite.body.onCollide= true;
+
 
     this.isEnemy = isEnemy;
     if(isEnemy) {
@@ -152,7 +157,9 @@ update()
           this.sprite.hp = 100;
     }
 
-    
+    // If we aren't dead, regen HP slowly
+    if(this.sprite.hp < 100) {this.sprite.hp += 0.1;}
+
     // If we aren't using the big thruster, activate the little thruster to slow us down and prevent drift.... if our X velocity is really small, just 
     // "apply the handbrake", setting velocity to zero
     if(this.tX == 0)
