@@ -41,6 +41,9 @@ var helpText;
 var pauseText;
 var pauseShade;
 var gameLogo;
+var scoreText;
+
+var boom;
 
 const state = {
  Menu: 'Menu',
@@ -78,9 +81,19 @@ function preload ()
     this.load.audio('sneak', 'music/Brought to life.mp3');
     this.load.audio('boss','music/Power Trip 3.mp3');
 
-    // load SFX
+    // load shooting sounds
     this.load.audio('shoot1','sounds/alienshoot1.wav');
     this.load.audio('shoot2','sounds/alienshoot2.wav');
+
+    // load all the explosion sounds
+    for(let i = 0; i < 9;i++ )
+    {
+    this.load.audio('boom' + (i+1),'explosions/explosion0' + (i+1) + '.wav');
+    }
+
+    // load hit sounds
+    this.load.audio('hitPlayerSound','sounds/hitPlayerSound.wav');
+    this.load.audio('hitEnemySound','sounds/hitEnemySound.wav');
 
 }
 
@@ -130,6 +143,17 @@ function create ()
     
     Ship.playerShip = player;
 
+    // Prepare the explosion sounds.
+    Ship.explosionSound = [];
+    for(let i = 0; i < 9;i++)
+    {
+        Ship.explosionSound[i] = this.sound.add('boom' + (i+1));
+        Ship.explosionSound[i].volume = 0.5;
+
+    }
+
+  
+
     for(let i = 0;i <4;i++)
     {
 
@@ -138,7 +162,7 @@ function create ()
         
 
        // Collide with the player
-       this.physics.add.collider(player.sprite, enemy[i].sprite, function(hitShip, hitBullet, body1, body2) { /* TODO: Add collision code */});
+       this.physics.add.collider(player.sprite, enemy[i].sprite, function(pShip, eShip, body1, body2) { pShip.hp -= 10; eShip.hp -= 10;  pShip.hitSound.play();});
         
     }
 
@@ -147,7 +171,8 @@ function create ()
     {
         for(let j = i;j < enemy.length;j++)
         {
-            this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(hitShip, hitBullet, body1, body2) { console.log('one bounce');});
+            this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(aShip, bShip, body1, body2) {
+                 aShip.hp -= 10; bShip.hp -= 10; console.log('one bounce'); aShip.hitSound.play(); bShip.hitSound.play(); });
         }
     }
 
@@ -159,7 +184,8 @@ function create ()
         {
         this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
         console.log('Player hit'); 
-        hitShip.hp -= 50;
+        hitShip.hitSound.play();
+        hitShip.hp -= 20;
         hitBullet.x = -400; hitBullet.y = -400; 
         hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
         hitBullet.setVelocity(0,0);}); 
@@ -175,6 +201,7 @@ function create ()
         {
             this.physics.add.overlap(enemy[i].sprite, player.bullet[j], function(hitShip, hitBullet, body1, body2) { 
                 console.log('Enemy hit'); 
+                hitShip.hitSound.play();
                 hitShip.hp -= 50;
                 hitBullet.x = -400; hitBullet.y = -400; 
                 hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
@@ -196,6 +223,8 @@ function create ()
     helpText = this.add.text(10,10,"Press F1 to toggle help");
     helpText.visible = false; // Don't show the help text in the menu.
     pauseText = this.add.text(400,400, "Paused - Press escape to unpause");
+
+    scoreText = this.add.text(750,10,"");
     
 
 
@@ -222,7 +251,11 @@ function create ()
         }
     
     });
+    this.input.keyboard.on('keyup-SPACE', function(event) { 
 
+       
+        
+        });
    
     
     // Start game
@@ -233,6 +266,8 @@ function create ()
 
     battleMusic.play();
     battleMusic.pause();
+
+    Ship.score = 0;
 
     
     
@@ -252,6 +287,7 @@ function update ()
    menuBack.tilePositionY -= 1;
 
 
+   scoreText.text = "Score: " + Ship.score;
  
 
     if(gameState == state.Gameplay)
@@ -267,9 +303,7 @@ function update ()
         if(game.input.mousePointer.buttons == 1) { player.shoot();}
 
         // boom controls
-
         
-        //if(keys.SPACE.isDown) {explosion.play('explode');}
 
             // Game design controls.
             if(keys.UP.isDown) {Ship.BIG_THRUST += 100;}

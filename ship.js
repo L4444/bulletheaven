@@ -4,7 +4,12 @@ class Ship
     static LITTLE_THRUST = 5.0; 
     static MAX_SPEED = 400;
     static playerShip;
+    static score;
 
+  static explosionSound;
+ 
+
+ 
 
 constructor(engine,spriteName,x,y,isEnemy)
 {
@@ -33,8 +38,6 @@ constructor(engine,spriteName,x,y,isEnemy)
 
 
     // The actual ship's sprite 
-   
-
     this.sprite = engine.physics.add.sprite(x,y, spriteName);
 
     // -- Get the measurements of the ship spread and create a hit circle 
@@ -45,7 +48,7 @@ constructor(engine,spriteName,x,y,isEnemy)
     
     // -- Enemies don't collide with the sides, that way they can 'spawn' from the north
     if(!isEnemy) {this.sprite.body.setCollideWorldBounds(true);}
-    this.sprite.body.setBounce(3,3); // Ships should bounce a little off each other.
+    this.sprite.body.setBounce(10,10); // Ships should bounce enough off each other to prevent "rubbing"
     
     this.sprite.setScale(0.5);
 
@@ -59,15 +62,25 @@ constructor(engine,spriteName,x,y,isEnemy)
         // The Y position I "should" be in.
         this.targetY = y;
     }
+    else{
+        this.score = 0;
+    }
 
     this.tX = 0.0;
     this.tY = 0.0;
 
    
-   if(isEnemy) { this.shootSound = engine.sound.add('shoot2', {loop: false});}
+   if(isEnemy) { 
+    this.shootSound = engine.sound.add('shoot2', {loop: false});
+    /// Workaround, tie the hitsound to the sprite so it can be called in the collision detection code
+    this.sprite.hitSound = engine.sound.add('hitEnemySound', {loop: false}); 
+    this.sprite.hitSound.volume = 0.5;
+}
    else
    {
     this.shootSound = engine.sound.add('shoot1', {loop: false});
+    /// Workaround, tie the hitsound to the sprite so it can be called in the collision detection code
+    this.sprite.hitSound = engine.sound.add('hitPlayerSound', {loop: false});
    }
 
    
@@ -152,7 +165,15 @@ update()
           {
             this.sprite.x = 300;
             this.sprite.y = -3000;
+            Ship.score += 100;
+
+           
           }
+
+           // Play explosion sound effect.
+           var r = Math.floor(Math.random() * 9);
+           console.log(r);
+           Ship.explosionSound[r].play(); 
 
           this.sprite.hp = 100;
     }
@@ -207,7 +228,7 @@ update()
     this.tY = 0;
 
   
-
+    
 }
 doAI() 
 {
