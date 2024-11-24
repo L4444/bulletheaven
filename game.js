@@ -40,6 +40,7 @@ var infoText;
 var helpText;
 var pauseText;
 var pauseShade;
+var gameLogo;
 
 const state = {
  Menu: 'Menu',
@@ -51,9 +52,14 @@ var gameState;
 function preload ()
 {
     this.load.image('player','ships/1B.png');
-    this.load.image('enemy','ships/8.png');
+    this.load.image('enemy1','ships/2.png');
+    this.load.image('enemy2','ships/3.png');
+    this.load.image('enemy3','ships/8.png');
+    this.load.image('enemy4','ships/10.png');
+
     this.load.image('back','Backgrounds/Blue Nebula/Blue Nebula 1 - 1024x1024.png');
     this.load.image('menuBack','Backgrounds/Green Nebula/Green Nebula 7 - 1024x1024.png');
+    this.load.image('logo','Ratspace Logo.png');
 
 
     this.load.image('pew','pew.png');
@@ -80,7 +86,8 @@ function preload ()
 
 function resumeGame()
 {
-    gameState = state.Gameplay; this.game.scene.scenes[0].physics.resume();this.game.sound.pauseAll(); battleMusic.resume(); menuBack.visible = false; pauseText.visible = false; pauseShade.visible = false;
+    gameState = state.Gameplay; this.game.scene.scenes[0].physics.resume();this.game.sound.pauseAll(); battleMusic.resume();
+     menuBack.visible = false; pauseText.visible = false; pauseShade.visible = false; gameLogo.visible = false; helpText.visible = true;
 }
 
 function pauseGame()
@@ -126,7 +133,7 @@ function create ()
     for(let i = 0;i <4;i++)
     {
 
-        enemy[i] = new Ship(this,'enemy',300, i*130+80,true);
+        enemy[i] = new Ship(this,'enemy' + (i+1),300, i*130+80,true);
 
         
 
@@ -181,9 +188,13 @@ function create ()
     pauseShade = this.add.rectangle(0, 0, 2000, 2000, 0x336633, .25);
     pauseShade.visible = false;
 
+    gameLogo = this.add.sprite(500,350,'logo');
+    gameLogo.setScale(0.5);
+
     keys = this.input.keyboard.addKeys('W,S,A,D,F,E,Q,UP,DOWN,SPACE,F1');
     infoText = this.add.text(10,30,"");
     helpText = this.add.text(10,10,"Press F1 to toggle help");
+    helpText.visible = false; // Don't show the help text in the menu.
     pauseText = this.add.text(400,400, "Paused - Press escape to unpause");
     
 
