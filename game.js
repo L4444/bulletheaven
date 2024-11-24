@@ -116,8 +116,7 @@ function create ()
     }
     this.anims.create({key: 'explode', frames:f, frameRate: 30, repeat: 0});
 
-    explosion = this.add.sprite(400,400, 'boom14');
-    explosion.setScale(0.25);
+   
 
    
     player = new Ship(this,'player',460,840, false);
@@ -152,7 +151,9 @@ function create ()
         for(let j = 0;j < enemy[i].bullet.length;j++)
         {
         this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
-        console.log('Player hit'); hitBullet.x = -400; hitBullet.y = -400; 
+        console.log('Player hit'); 
+        hitShip.hp -= 50;
+        hitBullet.x = -400; hitBullet.y = -400; 
         hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
         hitBullet.setVelocity(0,0);}); 
         }
@@ -166,7 +167,9 @@ function create ()
         for(let j = 0;j < player.bullet.length;j++)
         {
             this.physics.add.overlap(enemy[i].sprite, player.bullet[j], function(hitShip, hitBullet, body1, body2) { 
-                console.log('Enemy hit'); hitBullet.x = -400; hitBullet.y = -400; 
+                console.log('Enemy hit'); 
+                hitShip.hp -= 50;
+                hitBullet.x = -400; hitBullet.y = -400; 
                 hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
                 hitBullet.setVelocity(0,0);}); 
         }
@@ -253,6 +256,8 @@ function update ()
         if(game.input.mousePointer.buttons == 1) { player.shoot();}
 
         // boom controls
+
+        
         //if(keys.SPACE.isDown) {explosion.play('explode');}
 
             // Game design controls.
@@ -294,7 +299,7 @@ function update ()
 
 
         // Cheesy scrolling background
-        //background.tilePositionY -= 2;
+        background.tilePositionY -= 2;
     }
 
 }

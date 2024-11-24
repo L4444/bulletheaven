@@ -37,7 +37,8 @@ constructor(engine,spriteName,x,y,isEnemy)
     let h = (isEnemy) ? 232 : 135;
 
     this.sprite = engine.physics.add.sprite(x,y, spriteName).setCircle(w /2,0,h/2 - w/2);
-    this.sprite.body.setCollideWorldBounds(true);
+    
+    if(!isEnemy) {this.sprite.body.setCollideWorldBounds(true);}
     this.sprite.body.setBounce(2,2);
     
     this.sprite.setScale(0.5);
@@ -49,6 +50,9 @@ constructor(engine,spriteName,x,y,isEnemy)
 
         // Go right, then go left. Like space invaders :)
         this.spaceInvaderRight = true;
+
+        // The Y position I "should" be in.
+        this.targetY = y;
     }
 
     this.tX = 0.0;
@@ -64,6 +68,14 @@ constructor(engine,spriteName,x,y,isEnemy)
    
    this.shootSound.volume = 0.3;
 
+   // set hp
+   this.sprite.hp = 100;
+   this.hpBarBack = engine.add.rectangle(0, 0, this.sprite.displayWidth, 10, 0x000000, 1);
+   this.hpBarFront = engine.add.rectangle(0, 0, this.sprite.displayWidth, 5, 0x336633, 1);
+   
+   // Setup explosion effect
+   this.explosion = engine.add.sprite(400,400, 'boom14');
+   this.explosion.setScale(0.25);
 
    
   
@@ -72,7 +84,7 @@ shoot()
 {
 
     
-    if(this.clock > this.lastTick + 40)
+    if(this.clock > this.lastTick + 100)
     {
         this.shootSound.play();
 
@@ -117,6 +129,29 @@ update()
 {
 
     if(this.isEnemy) {this.doAI();}
+
+    // line up the hp bar
+    this.hpBarBack.x = this.sprite.x ;
+    this.hpBarFront.x = this.sprite.x +((this.sprite.hp/100) * this.sprite.displayWidth/2) - this.sprite.displayWidth/2;
+    this.hpBarBack.y = this.hpBarFront.y  = this.sprite.y - 50;
+    this.hpBarFront.displayWidth = (this.sprite.hp/100) * this.sprite.displayWidth;
+    
+      // Check hp
+    if(this.sprite.hp <= 0)
+    {
+          this.explosion.x = this.sprite.x;
+          this.explosion.y = this.sprite.y;
+          this.explosion.play('explode');
+
+          if(this.isEnemy)
+          {
+            this.sprite.x = 300;
+            this.sprite.y = -3000;
+          }
+
+          this.sprite.hp = 100;
+    }
+
     
     // If we aren't using the big thruster, activate the little thruster to slow us down and prevent drift.... if our X velocity is really small, just 
     // "apply the handbrake", setting velocity to zero
@@ -164,13 +199,19 @@ update()
     this.tX = 0;
     this.tY = 0;
 
+  
+
 }
 doAI() 
 {
 
     if(this.sprite.x > 750) {this.spaceInvaderRight = false; }
     if(this.sprite.x < 150) {this.spaceInvaderRight = true; }
-    if(Math.floor(Math.random() * 40) == 1)  {this.shoot();}
+    if(this.sprite.y < this.targetY -30) {this.back();}
+    if(this.sprite.y > this.targetY+30) {this.forward();}
+
+
+    if(Math.floor(Math.random() * 40) == 1 && this.sprite.y > 0)  {this.shoot();}
     
 
     if(this.spaceInvaderRight) {this.right();} else {this.left();}
