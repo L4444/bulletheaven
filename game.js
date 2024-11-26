@@ -25,7 +25,7 @@ var enemy = [];
 var background;
 
 var keys;
-var explosion;
+
 
 var menuMusic;
 var battleMusic;
@@ -78,7 +78,7 @@ function preload ()
     // load music
     this.load.audio('menu','music/Menu.wav');
     this.load.audio('battle','music/n-Dimensions (Main Theme).mp3');
-    this.load.audio('sneak', 'music/Brought to life.mp3');
+    this.load.audio('sneak', 'music/through space.ogg');
     this.load.audio('boss','music/Power Trip 3.mp3');
 
     // load shooting sounds
@@ -92,8 +92,8 @@ function preload ()
     }
 
     // load hit sounds
-    this.load.audio('hitPlayerSound','sounds/hitPlayerSound.wav');
-    this.load.audio('hitEnemySound','sounds/hitEnemySound.wav');
+    this.load.audio('hitPlayerSound','sounds/misc_10.ogg');
+    this.load.audio('hitEnemySound','sounds/misc_02.ogg');
 
 }
 
@@ -124,7 +124,7 @@ function create ()
     battleMusic.volume = 0.1;
 
     sneakMusic = this.sound.add('sneak', {loop: true});
-    sneakMusic.volume = 0.1;
+    sneakMusic.volume = 0.2;
 
     bossMusic = this.sound.add('boss', {loop: true});
     bossMusic.volume = 0.1;
@@ -162,7 +162,9 @@ function create ()
         
 
        // Collide with the player
-       this.physics.add.collider(player.sprite, enemy[i].sprite, function(pShip, eShip, body1, body2) { pShip.hp -= 10; eShip.hp -= 10;  pShip.hitSound.play();});
+       this.physics.add.collider(player.sprite, enemy[i].sprite, function(pShip, eShip, body1, body2) { pShip.hp -= 10; eShip.hp -= 10;  
+        if(pShip.hp > 0) {pShip.hitSound.play();}
+    });
         
     }
 
@@ -172,7 +174,10 @@ function create ()
         for(let j = i;j < enemy.length;j++)
         {
             this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(aShip, bShip, body1, body2) {
-                 aShip.hp -= 10; bShip.hp -= 10; console.log('one bounce'); aShip.hitSound.play(); bShip.hitSound.play(); });
+                 aShip.hp -= 10; bShip.hp -= 10; console.log('one bounce');
+                 if(aShip.hp> 0) {aShip.hitSound.play();}
+                 if(bShip.hp> 0) {bShip.hitSound.play();}
+                });
         }
     }
 
@@ -184,8 +189,9 @@ function create ()
         {
         this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
         console.log('Player hit'); 
-        hitShip.hitSound.play();
+        hitShip.tint = 0xFF6666;
         hitShip.hp -= 20;
+        if(hitShip.hp > 0) {hitShip.hitSound.play();}
         hitBullet.x = -400; hitBullet.y = -400; 
         hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
         hitBullet.setVelocity(0,0);}); 
@@ -201,8 +207,9 @@ function create ()
         {
             this.physics.add.overlap(enemy[i].sprite, player.bullet[j], function(hitShip, hitBullet, body1, body2) { 
                 console.log('Enemy hit'); 
-                hitShip.hitSound.play();
+                
                 hitShip.hp -= 50;
+                if(hitShip.hp > 0) {hitShip.hitSound.play();}
                 hitBullet.x = -400; hitBullet.y = -400; 
                 hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
                 hitBullet.setVelocity(0,0);}); 
@@ -337,9 +344,13 @@ function update ()
         
         player.update();
 
+        
+
         for(let i = 0;i < enemy.length;i++)
         {
+        
             enemy[i].update();
+            
         }
 
 

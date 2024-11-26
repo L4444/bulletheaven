@@ -26,10 +26,7 @@ constructor(engine,spriteName,x,y,isEnemy)
     this.bullet[i].y = -400;
 
     
-        if(isEnemy)
-        {
-         
-        }
+      
     }
     this.nextBullet = 0;
 
@@ -92,7 +89,7 @@ constructor(engine,spriteName,x,y,isEnemy)
    this.hpBarFront = engine.add.rectangle(0, 0, this.sprite.displayWidth, 5, 0x336633, 1);
    
    // Setup explosion effect
-   this.explosion = engine.add.sprite(400,400, 'boom14');
+   this.explosion = engine.add.sprite(-400,-400, 'boom14');
    this.explosion.setScale(0.25);
 
    
