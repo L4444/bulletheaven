@@ -175,7 +175,7 @@ function create ()
         {
             this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(aShip, bShip, body1, body2) {
                  //aShip.hp -= 5; bShip.hp -= 5; 
-                 //console.log('one bounce');
+                 console.log('one bounce');
                
                 });
         }
