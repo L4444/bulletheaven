@@ -189,7 +189,7 @@ function create ()
         {
         this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
         console.log('Player hit'); 
-        hitShip.tint = 0xFF6666;
+        hitShip.tint = 0xFF8866;
         hitShip.hp -= 20;
         //if(hitShip.hp > 0) {hitShip.hitSound.play();} /// This is a horrible sound
         hitBullet.x = -400; hitBullet.y = -400; 
