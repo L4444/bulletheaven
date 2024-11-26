@@ -191,7 +191,7 @@ function create ()
         console.log('Player hit'); 
         hitShip.tint = 0xFF6666;
         hitShip.hp -= 20;
-        if(hitShip.hp > 0) {hitShip.hitSound.play();}
+        //if(hitShip.hp > 0) {hitShip.hitSound.play();} /// This is a horrible sound
         hitBullet.x = -400; hitBullet.y = -400; 
         hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
         hitBullet.setVelocity(0,0);}); 
