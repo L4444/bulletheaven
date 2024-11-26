@@ -92,7 +92,7 @@ function preload ()
     }
 
     // load hit sounds
-    this.load.audio('hitPlayerSound','sounds/misc_10.ogg');
+    this.load.audio('hitPlayerSound','sounds/hitPlayerSound.wav');
     this.load.audio('hitEnemySound','sounds/Laser_01.wav');
 
 }
@@ -211,7 +211,7 @@ function create ()
                 hitShip.hp -= 50;
                 if(hitShip.hp > 0) {hitShip.hitSound.play();}
                 hitBullet.x = -400; hitBullet.y = -400; 
-                hitShip.setVelocity(hitBullet.body.velocity.x*10,hitBullet.body.velocity.y*10); 
+                hitShip.setVelocity(hitBullet.body.velocity.x*400,hitBullet.body.velocity.y*400); 
                 hitBullet.setVelocity(0,0);}); 
         }
     }

@@ -2,7 +2,7 @@ class Ship
 {
     static BIG_THRUST = 2600;
     static LITTLE_THRUST = 5.0; 
-    static MAX_SPEED = 400;
+    static MAX_SPEED = 600;
     static playerShip;
     static score;
 
@@ -148,9 +148,9 @@ update()
     {
         this.sprite.tintTick = 255;
     }
-    //this.sprite.tint = '0xFFFF' +
+    
     this.sprite.tint = '0xFF' + this.sprite.tintTick.toString(16) + 'FF';
-    console.log(this.sprite.tintTopLeft);
+    
     
 
     if(this.isEnemy) {this.doAI();}
