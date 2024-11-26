@@ -93,7 +93,7 @@ function preload ()
 
     // load hit sounds
     this.load.audio('hitPlayerSound','sounds/misc_10.ogg');
-    this.load.audio('hitEnemySound','sounds/misc_02.ogg');
+    this.load.audio('hitEnemySound','sounds/Laser_01.wav');
 
 }
 
@@ -174,9 +174,8 @@ function create ()
         for(let j = i;j < enemy.length;j++)
         {
             this.physics.add.collider(enemy[i].sprite, enemy[j].sprite, function(aShip, bShip, body1, body2) {
-                 aShip.hp -= 10; bShip.hp -= 10; console.log('one bounce');
-                 if(aShip.hp> 0) {aShip.hitSound.play();}
-                 if(bShip.hp> 0) {bShip.hitSound.play();}
+                 aShip.hp -= 5; bShip.hp -= 5; console.log('one bounce');
+               
                 });
         }
     }
@@ -189,7 +188,7 @@ function create ()
         {
         this.physics.add.overlap(player.sprite, enemy[i].bullet[j], function(hitShip, hitBullet, body1, body2) { 
         console.log('Player hit'); 
-        hitShip.tint = 0xFF8866;
+        hitShip.tintTick = 0;
         hitShip.hp -= 20;
         //if(hitShip.hp > 0) {hitShip.hitSound.play();} /// This is a horrible sound
         hitBullet.x = -400; hitBullet.y = -400; 
@@ -207,7 +206,7 @@ function create ()
         {
             this.physics.add.overlap(enemy[i].sprite, player.bullet[j], function(hitShip, hitBullet, body1, body2) { 
                 console.log('Enemy hit'); 
-                
+                hitShip.tintTick = 0;
                 hitShip.hp -= 50;
                 if(hitShip.hp > 0) {hitShip.hitSound.play();}
                 hitBullet.x = -400; hitBullet.y = -400; 

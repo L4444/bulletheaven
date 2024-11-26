@@ -93,7 +93,7 @@ constructor(engine,spriteName,x,y,isEnemy)
    this.explosion.setScale(0.25);
 
    
-  
+   this.sprite.tintTick = 255;
 }
 shoot()
 {
@@ -142,6 +142,16 @@ back()
 }
 update()
 {
+    this.sprite.tintTick += 5;
+
+    if(this.sprite.tintTick > 255)
+    {
+        this.sprite.tintTick = 255;
+    }
+    //this.sprite.tint = '0xFFFF' +
+    this.sprite.tint = '0xFF' + this.sprite.tintTick.toString(16) + 'FF';
+    console.log(this.sprite.tintTopLeft);
+    
 
     if(this.isEnemy) {this.doAI();}
 
